@@ -1,0 +1,16 @@
+name: topl_common
+description: Topl Common and Proto definitions
+repository: https://github.com/Topl/dart_topl_common
+
+version: 0.1.0
+
+environment:
+  sdk: ">=2.19.5 <3.0.0"
+
+
+dependencies:
+  protobuf: ^2.0.1
+  grpc: ^3.0.2
+
+dev_dependencies:
+  test: ^1.22.1
