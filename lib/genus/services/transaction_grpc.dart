@@ -4,6 +4,9 @@ import 'package:topl_common/proto/genus/genus_models.pb.dart';
 import 'package:topl_common/proto/genus/genus_rpc.pbgrpc.dart';
 import 'package:topl_common/genus/request_utils.dart';
 import 'package:grpc/grpc.dart';
+import '../grpc_channel_settings.dart';
+import '../native_grpc_channel.dart'
+    if (dart.library.html) '../web_grpc_channel.dart';
 
 class GenusGRPCService {
   /// The client stub for the Genus Transaction gRPC service
@@ -28,18 +31,14 @@ class GenusGRPCService {
       credentials: ChannelCredentials.insecure(),
     ),
   })  : genusBlockStub = BlockServiceClient(
-    ClientChannel(
-      host,
-      port: port,
-      options: options,
-    ),
-  ),
+          getClientChannel(
+              grpcSettings:
+                  GrpcSettings(host: host, port: port, options: options)),
+        ),
         genusTransactionStub = TransactionServiceClient(
-          ClientChannel(
-            host,
-            port: port,
-            options: options,
-          ),
+          getClientChannel(
+              grpcSettings:
+                  GrpcSettings(host: host, port: port, options: options)),
         );
 
   /////////////////////////////
@@ -62,8 +61,8 @@ class GenusGRPCService {
     final ChainDistance? chainHeight = height == null
         ? null
         : ChainDistance(
-      value: Int64(height),
-    );
+            value: Int64(height),
+          );
 
     final GetBlockByHeightRequest request = GetBlockByHeightRequest(
       confidenceFactor: getConfidenceFactorFromDouble(confidence),
@@ -93,8 +92,8 @@ class GenusGRPCService {
     final ChainDistance? chainDistance = depth == null
         ? null
         : ChainDistance(
-      value: Int64(depth),
-    );
+            value: Int64(depth),
+          );
 
     final GetBlockByDepthRequest request = GetBlockByDepthRequest(
       depth: chainDistance,
@@ -153,7 +152,8 @@ class GenusGRPCService {
       confidenceFactor: getConfidenceFactorFromDouble(confidence),
       transactionId: getTransactionIdFromInt(transactionId),
     );
-    final TransactionResponse response = await genusTransactionStub.getTransactionById(
+    final TransactionResponse response =
+        await genusTransactionStub.getTransactionById(
       request,
       options: options,
     );
@@ -206,7 +206,8 @@ class GenusGRPCService {
       indexSpec: indexSpec,
       populate: populate,
     );
-    final CreateOnChainTransactionIndexResponse response = await genusTransactionStub.createOnChainTransactionIndex(
+    final CreateOnChainTransactionIndexResponse response =
+        await genusTransactionStub.createOnChainTransactionIndex(
       request,
       options: options,
     );
@@ -245,7 +246,8 @@ class GenusGRPCService {
     CallOptions? options,
   }) async {
     final request = GetExistingTransactionIndexesRequest();
-    final GetExistingTransactionIndexesResponse response = await genusTransactionStub.getExistingTransactionIndexes(
+    final GetExistingTransactionIndexesResponse response =
+        await genusTransactionStub.getExistingTransactionIndexes(
       request,
       options: options,
     );
@@ -279,7 +281,8 @@ class GenusGRPCService {
       skipResults: skipResults == null ? null : Int64(skipResults),
       value: indexMatchValues,
     );
-    final Stream<TransactionResponse> stream = genusTransactionStub.getIndexedTransactions(
+    final Stream<TransactionResponse> stream =
+        genusTransactionStub.getIndexedTransactions(
       request,
       options: options,
     );
@@ -310,7 +313,8 @@ class GenusGRPCService {
       address: address,
       confidenceFactor: getConfidenceFactorFromDouble(confidence),
     );
-    final TxoAddressResponse response = await genusTransactionStub.getTxosByAddress(
+    final TxoAddressResponse response =
+        await genusTransactionStub.getTxosByAddress(
       request,
       options: options,
     );
@@ -335,7 +339,8 @@ class GenusGRPCService {
       address: address,
       confidenceFactor: getConfidenceFactorFromDouble(confidence),
     );
-    final Stream<TxoAddressResponse> stream = genusTransactionStub.getTxosByAddressStream(
+    final Stream<TxoAddressResponse> stream =
+        genusTransactionStub.getTxosByAddressStream(
       request,
       options: options,
     );
